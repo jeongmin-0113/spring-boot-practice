@@ -1,29 +1,38 @@
 package com.mysite.sbb;
 
+import com.mysite.sbb.answer.Answer;
+import com.mysite.sbb.answer.AnswerRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import com.mysite.sbb.question.Question;
+import com.mysite.sbb.question.QuestionRepository;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 class SbbApplicationTests {
 
 	@Autowired
 	private QuestionRepository questionRepository;
+
+	@Autowired
+	private AnswerRepository answerRepository;
 	@Test
 	void testJpa() {
-		Question q1 = new Question();
-		q1.setSubject("sbb가 머임요?");
-		q1.setContent("알려주셈ㅜ");
-		q1.setCreateDate(LocalDateTime.now());
-		this.questionRepository.save(q1);
+		Optional<Question> oq = this.questionRepository.findById(2);
+		assertTrue(oq.isPresent());
+		Question q = oq.get();
 
-		Question q2 = new Question();
-		q2.setSubject("스프링부트 모델 질문");
-		q2.setContent("id 자동 생성됨?");
-		q2.setCreateDate(LocalDateTime.now());
-		this.questionRepository.save(q2);
+		Answer a = new Answer();
+		a.setContent("네넹!!");
+		a.setQuestion(q);
+		a.setCreateDate(LocalDateTime.now());
+		this.answerRepository.save(a);
 	}
 
 }
