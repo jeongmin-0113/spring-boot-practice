@@ -48,4 +48,7 @@ public class UesrController {
     private String login() {
         return "login_form";
     }
+
+    @GetMapping("/mypage")
+    private String mypage() { return "mypage.html"; }
 }
