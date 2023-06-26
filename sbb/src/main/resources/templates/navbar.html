@@ -18,9 +18,9 @@
                            th:text="${#authentication.getPrincipal().getUsername()}">
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDarkDropdownMenuLink">
-                            <li><a class="dropdown-item" href="#">마이페이지</a></li>
-                            <li><a class="dropdown-item" href="#">내 그룹</a></li>
-                            <li><a class="dropdown-item" href="@{/user/logout}">로그아웃</a></li>
+                            <li><a class="dropdown-item" th:href="@{|/user/page/${#authentication.getPrincipal().getUsername()}|}">마이페이지</a></li>
+                            <li><a class="dropdown-item" href="/">내 그룹</a></li>
+                            <li><a class="dropdown-item" th:href="@{/user/logout}">로그아웃</a></li>
                         </ul>
                     </li>
                 </li>

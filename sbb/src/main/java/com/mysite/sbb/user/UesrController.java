@@ -3,11 +3,19 @@ package com.mysite.sbb.user;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.server.ResponseStatusException;
+
+import java.security.Principal;
 
 @RequiredArgsConstructor
 @Controller
@@ -49,6 +57,14 @@ public class UesrController {
         return "login_form";
     }
 
-    @GetMapping("/mypage")
-    private String mypage() { return "mypage.html"; }
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/page/{username}")
+    private String page(Authentication authentication, @PathVariable("username") String username) {
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        //SiteUser user = this.userService.getUser(userDetails.getUsername());
+        if (!username.equals(userDetails.getUsername())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "접근 권한이 없습니다.");
+        }
+        return "page_main";
+    }
 }
