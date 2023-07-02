@@ -15,12 +15,13 @@ public class AnswerService {
 
     private final AnswerRepository answerRepository;
 
-    public Answer create(Question question, String content, SiteUser author) {
+    public Answer create(Question question, String content, SiteUser author, Boolean isPrivate) {
         Answer answer = new Answer();
         answer.setContent(content);
         answer.setCreateDate(LocalDateTime.now());
         answer.setQuestion(question);
         answer.setAuthor(author);
+        answer.setIsPrivate(isPrivate);
         this.answerRepository.save(answer);
         return answer;
     }

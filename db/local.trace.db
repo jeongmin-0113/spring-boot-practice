@@ -113,3 +113,6 @@ Caused by: org.h2.mvstore.MVStoreException: The file is locked: C:/Users/박정�
 	at org.h2.mvstore.FileStore.open(FileStore.java:128)
 	at org.h2.mvstore.MVStore.<init>(MVStore.java:452)
 	... 97 more
+2023-06-27 18:31:24 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "[*]IS_PRIVATE"; expected "INSERT"; SQL statement:
+IS_PRIVATE [42001-214]

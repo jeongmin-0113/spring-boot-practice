@@ -28,7 +28,7 @@ public class AnswerController {
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/create/{id}")
-    public String createAnswer(Model model, @PathVariable("id") Integer id, @Valid AnswerForm answerForm, BindingResult bindingResult, Principal principal) {
+    public String createAnswer(Model model, @PathVariable("id") Integer id, @Valid AnswerForm answerForm, @RequestParam(value="privateAnswer", required = false) String checkBoxValue, BindingResult bindingResult, Principal principal) {
 
         Question question = this.questionService.getQuestion(id);
         SiteUser siteUser = this.userService.getUser(principal.getName());
@@ -37,9 +37,25 @@ public class AnswerController {
             model.addAttribute("question", question);
             return "question_detail";
         }
-        this.answerService.create(question, answerForm.getContent(), siteUser);
+        Boolean isPrivate;
+        if(checkBoxValue!=null) isPrivate=true;
+        else isPrivate=false;
+        this.answerService.create(question, answerForm.getContent(), siteUser, isPrivate);
         return String.format("redirect:/question/detail/%s", id);
     }
+
+    /*@RequestMapping(value = "/create/{id}" , method = RequestMethod. POST)
+    public void editCustomer(@RequestParam(value = "checkboxName", required = false) String checkboxValue)
+    {
+        if(checkboxValue != null)
+        {
+
+        }
+        else
+        {
+            System.out.println("checkbox is not checked");
+        }
+    }*/
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/modify/{id}")

@@ -23,12 +23,12 @@
             <div class="my-3">
                 <a th:href="@{|/question/modify/${question.id}|}" class="btn btn-sm btn-outline-secondary"
                    sec:authorize="isAuthenticated()"
-                   th:if="${question.author != null and #authentication.getPrincipal().getUsername() == question.author.nickname}"
+                   th:if="${question.author != null and #authentication.getPrincipal().getUsername() == question.author.username}"
                    th:text="수정">
                 </a>
                 <a href="javascript:void(0);" th:data-uri="@{|/question/delete/${question.id}|}"
                    class="delete btn btn-sm btn-outline-secondary" sec:authorize="isAuthenticated()"
-                   th:if="${question.author != null and #authentication.getPrincipal().getUsername() == question.author.nickname}"
+                   th:if="${question.author != null and #authentication.getPrincipal().getUsername() == question.author.username}"
                    th:text="삭제">
                 </a>
             </div>
@@ -41,31 +41,59 @@
     <!--답변 반복 출력-->
     <div class="card my-3" th:each="answer: ${question.answerList}">
         <div class="card-body">
-            <div class="card-text" style="white-space: pre-line;" th:text="${answer.content}"></div>
-            <div class="d-flex justify-content-end">
-                <div th:if="${answer.modifyDate != null}" class="badge bg-light text-dark p-2 text-start mx-3">
-                    <div class="mb-2">modified at</div>
-                    <div th:text="${#temporals.format(answer.modifyDate, 'yyyy-MM-dd HH:mm')}"></div>
+            <block th:if="${answer.isPrivate}" >
+                <a sec:authorize="isAnonymous()" th:text="secret"></a>
+                <div sec:authorize="isAuthenticated()">
+                    <!--볼수잇는놈-->
+                    <block th:if="${#authentication.getPrincipal().getUsername() == question.author.username} or ${#authentication.getPrincipal().getUsername() == answer.author.username}">
+                        <div class="card-text" style="white-space: pre-line;" th:text="${answer.content}"></div>
+                        <div class="d-flex justify-content-end">
+                            <div th:if="${answer.modifyDate != null}" class="badge bg-light text-dark p-2 text-start mx-3">
+                                <div class="mb-2">modified at</div>
+                                <div th:text="${#temporals.format(answer.modifyDate, 'yyyy-MM-dd HH:mm')}"></div>
+                            </div>
+                            <div class="badge bg-light text-dark p-2 text-start">
+                                <!--답변 작성자 id 표시-->
+                                <div class="mb-2">
+                                    <span th:if="${answer.author != null}" th:text="${answer.author.nickname}"></span>
+                                </div>
+                                <div th:text="${#temporals.format(answer.createDate, 'yyyy-MM-dd HH:mm')}"></div>
+                            </div>
+                        </div>
+                    </block>
+                    <!--못보는놈-->
+                    <block th:unless="${#authentication.getPrincipal().getUsername() == question.author.username} or ${#authentication.getPrincipal().getUsername() == answer.author.username}">
+                        <div class="card-text" style="white-space: pre-line;" th:text="비밀댓글입니다."></div>
+                    </block>
                 </div>
-                <div class="badge bg-light text-dark p-2 text-start">
-                    <!--질문 작성자 id 표시-->
-                    <div class="mb-2">
-                        <span th:if="${question.author == null}" th:text="게스트"></span>
-                        <span th:if="${question.author != null}" th:text="${question.author.nickname}"></span>
+            </block>
+
+            <block th:if="${answer.isPrivate==false or answer.isPrivate == null}">
+                <div class="card-text" style="white-space: pre-line;" th:text="${answer.content}"></div>
+                <div class="d-flex justify-content-end">
+                    <div th:if="${answer.modifyDate != null}" class="badge bg-light text-dark p-2 text-start mx-3">
+                        <div class="mb-2">modified at</div>
+                        <div th:text="${#temporals.format(answer.modifyDate, 'yyyy-MM-dd HH:mm')}"></div>
                     </div>
-                    <div th:text="${#temporals.format(answer.createDate, 'yyyy-MM-dd HH:mm')}"></div>
+                    <div class="badge bg-light text-dark p-2 text-start">
+                        <!--답변 작성자 id 표시-->
+                        <div class="mb-2">
+                            <span th:if="${answer.author != null}" th:text="${answer.author.nickname}"></span>
+                        </div>
+                        <div th:text="${#temporals.format(answer.createDate, 'yyyy-MM-dd HH:mm')}"></div>
+                    </div>
                 </div>
-            </div>
+            </block>
             <!--답변 수정, 삭제 버튼-->
             <div class="my-3">
                 <a th:href="@{|/answer/modify/${answer.id}|}" class="btn btn-sm btn-outline-secondary"
                    sec:authorize="isAuthenticated()"
-                   th:if="${answer.author != null and #authentication.getPrincipal().getUsername() == answer.author.nickname}"
+                   th:if="${answer.author != null and #authentication.getPrincipal().getUsername() == answer.author.username}"
                    th:text="수정">
                 </a>
                 <a href="javascript:void(0);" th:data-uri="@{|/answer/delete/${answer.id}|}"
                    class="delete btn btn-sm btn-outline-secondary" sec:authorize="isAuthenticated()"
-                   th:if="${answer.author != null and #authentication.getPrincipal().getUsername() == answer.author.nickname}"
+                   th:if="${answer.author != null and #authentication.getPrincipal().getUsername() == answer.author.username}"
                    th:text="삭제">
                 </a>
             </div>
@@ -78,6 +106,9 @@
         <textarea sec:authorize="isAnonymous()" disabled th:field="*{content}" rows="2" class="form-control"></textarea>
         <textarea sec:authorize="isAuthenticated()" th:field="*{content}" rows="10" class="form-control"></textarea>
         <input sec:authorize="isAnonymous()" disabled type="submit" value="답변을 등록하려면 로그인하세요." class="btn btn-secondary my-2">
+
+        <label> <input type="checkbox" name="privateAnswer" value="private"> 비밀 댓글</label>
+
         <input sec:authorize="isAuthenticated()" type="submit" value="답변등록" class="btn btn-primary my-2">
     </form>
 </div>
