@@ -71,14 +71,19 @@ public class AnswerController {
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/modify/{id}")
-    public String answerModify(@Valid AnswerForm answerForm, BindingResult bindingResult, @PathVariable("id") Integer id, Principal principal) {
+    public String answerModify(@Valid AnswerForm answerForm, BindingResult bindingResult, @PathVariable("id") Integer id, @RequestParam(value="privateAnswer", required = false) String checkBoxValue, Principal principal) {
         if (bindingResult.hasErrors()) return "answer_form";
 
         Answer answer = this.answerService.getAnswer(id);
         if (!answer.getAuthor().getUsername().equals(principal.getName())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "수정 권한이 없습니다.");
         }
-        this.answerService.modify(answer, answerForm.getContent());
+
+        Boolean isPrivate;
+        if(checkBoxValue!=null) isPrivate=true;
+        else isPrivate=false;
+
+        this.answerService.modify(answer, answerForm.getContent(),isPrivate);
         return String.format("redirect:/question/detail/%s", answer.getQuestion().getId());
     }
 

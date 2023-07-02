@@ -35,9 +35,10 @@ public class AnswerService {
         }
     }
 
-    public void modify(Answer answer, String content) {
+    public void modify(Answer answer, String content, Boolean isPrivate) {
         answer.setContent(content);
         answer.setModifyDate(LocalDateTime.now());
+        answer.setIsPrivate(isPrivate);
         this.answerRepository.save(answer);
     }
 

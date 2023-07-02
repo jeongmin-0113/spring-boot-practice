@@ -45,9 +45,7 @@ public class UesrController {
     }
 
     @GetMapping("/login")
-    private String login() {
-        return "login_form";
-    }
+    private String login() { return "login_form"; }
 
     @GetMapping("/mypage")
     private String mypage() { return "mypage.html"; }
